@@ -1,0 +1,64 @@
+<div class="title">
+    <div class="btn ">
+        <input type="submit" class="btn-back btn-medium no-margin"
+               onclick="window.location='#/listado_sucursales';"
+               value="">
+        <label>Volver</label>
+    </div>
+    <h1>Administrar Sucursales</h1></div>
+<div class="v-spacer"></div>
+<form ng-controller="SucursalesController  as sucursalesCtrl"
+      name="sucursalesForm" novalidate
+      form-id="frmSucursales">
+    <div class="form-flex" style="justify-content:flex-start !important;">
+        <div class="input-container">
+            <input type="text" id="nombre" name="nombre" ng-model="sucursalesCtrl.sucursal.nombre" ng-maxlength="45"
+                   required ac-validator is-required="El campo es requerido">
+            <label for="nombre">Nombre</label>
+
+        </div>
+        <div class="input-container">
+            <input type="text" id="direccion" name="direccion" ng-model="sucursalesCtrl.sucursal.direccion"
+                   ng-maxlength="45"
+                   required ac-validator is-required="El campo es requerido">
+            <label for="direccion">Direccion</label>
+
+        </div>
+        <div class="input-container">
+            <input type="text" id="telefono" name="telefono" ng-model="sucursalesCtrl.sucursal.telefono"
+                   ng-maxlength="45"
+                   required ac-validator is-required="El campo es requerido">
+            <label for="telefono">Telefono</label>
+
+        </div>
+        <div class="input-container">
+            <input type="number" id="pos_cantidad" name="pos_cantidad" ng-model="sucursalesCtrl.sucursal.pos_cantidad"
+                   ng-maxlength="2"
+                   required ac-validator is-required="El campo es requerido" max-number="99;No pueden existir mas de 99 cajas"
+                   min-number="1;Al menos debe existir una caja">
+            <label for="telefono">Cantidad de POS</label>
+
+        </div>
+
+
+    </div>
+    <br/>
+
+    <div>
+        <!--<input type="submit"-->
+        <!--ng-disabled="sucursalesForm.user.$dirty && sucursalesForm.user.$invalid ||-->
+        <!--sucursalesForm.email.$dirty && sucursalesForm.email.$invalid">-->
+        <div class="btn"><button ng-click="sucursalesCtrl.save();"
+                                ac-validator class="relieve-2 btn-ok btn-big" value=""></button>
+            <label>Guardar Sucursal</label>
+        </div>
+
+        <div ng-if="sucursalesCtrl.id != 0" class="btn">
+            <input type="submit" ng-click="sucursalesCtrl.delete();"
+                   class="relieve-2 btn-delete btn-big" value="">
+            <label>Eliminar Sucursal</label>
+        </div>
+    </div>
+
+</form>
+
