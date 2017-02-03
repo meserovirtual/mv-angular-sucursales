@@ -40,7 +40,8 @@ class Sucursales extends Main
     {
         $db = self::$instance->db;
 
-        $results = $db->get('sucursales');
+        //$results = $db->get('sucursales');
+        $results = $db->rawQuery('SELECT sucursal_id, nombre, direccion, telefono, pos_cantidad FROM sucursales ORDER BY nombre');
 
         echo json_encode($results);
     }
@@ -50,11 +51,24 @@ class Sucursales extends Main
      * @description Crea una categoría, esta es la tabla paramétrica, la funcion createSucursales crea las relaciones
      * @param $sucursal
      */
-    function create($sucursal)
+    function create($params)
     {
-        $db = new MysqliDb();
+        $db = self::$instance->db;
+        $sucursal_decoded = self::checkSucursal(json_decode($params["sucursal"]));
+
+        $SQL = 'Select sucursal_id from sucursales where nombre ="' . $sucursal_decoded->nombre . '"';
+
+        $result = $db->rawQuery($SQL);
+
+        if ($db->count > 0) {
+            header('HTTP/1.0 500 Internal Server Error');
+            echo 'Existe una sucursal con ese nombre';
+            return;
+        }
+
+        $db = self::$instance->db;
         $db->startTransaction();
-        $sucursal_decoded = checkSucursal(json_decode($sucursal));
+        $sucursal_decoded = self::checkSucursal(json_decode($params["sucursal"]));
 
         $data = array(
             'nombre' => $sucursal_decoded->nombre,
@@ -66,10 +80,12 @@ class Sucursales extends Main
         $result = $db->insert('sucursales', $data);
         if ($result > -1) {
             $db->commit();
+            header('HTTP/1.0 200 Ok');
             echo json_encode($result);
         } else {
             $db->rollback();
-            echo json_encode(-1);
+            header('HTTP/1.0 500 Internal Server Error');
+            echo $db->getLastError();
         }
     }
 
@@ -78,11 +94,25 @@ class Sucursales extends Main
      * @description Modifica una sucursal
      * @param $sucursal
      */
-    function update($sucursal)
+    function update($params)
     {
-        $db = new MysqliDb();
+        $db = self::$instance->db;
+        $sucursal_decoded = self::checkSucursal(json_decode($params["sucursal"]));
+
+        $SQL = 'Select sucursal_id from sucursales where nombre ="' . $sucursal_decoded->nombre . '" AND sucursal_id != "' . $sucursal_decoded->sucursal_id . '"';
+
+        $result = $db->rawQuery($SQL);
+
+        if ($db->count > 0) {
+            header('HTTP/1.0 500 Internal Server Error');
+            echo 'Existe una sucursal con ese nombre';
+            return;
+        }
+
+        $db = self::$instance->db;
         $db->startTransaction();
-        $sucursal_decoded = checkSucursal(json_decode($sucursal));
+        $sucursal_decoded = self::checkSucursal(json_decode($params["sucursal"]));
+
         $db->where('sucursal_id', $sucursal_decoded->sucursal_id);
         $data = array(
             'nombre' => $sucursal_decoded->nombre,
@@ -94,10 +124,12 @@ class Sucursales extends Main
         $result = $db->update('sucursales', $data);
         if ($result) {
             $db->commit();
+            header('HTTP/1.0 200 Ok');
             echo json_encode($result);
         } else {
             $db->rollback();
-            echo json_encode(-1);
+            header('HTTP/1.0 500 Internal Server Error');
+            echo $db->getLastError();
         }
     }
 
@@ -106,11 +138,11 @@ class Sucursales extends Main
      * @description Elimina una sucursal
      * @param $sucursal_id
      */
-    function remove($sucursal_id)
+    function remove($params)
     {
-        $db = new MysqliDb();
+        $db = self::$instance->db;
 
-        $db->where("sucursal_id", $sucursal_id);
+        $db->where("sucursal_id", $params["sucursal_id"]);
         $results = $db->delete('sucursales');
 
         if ($results) {
@@ -131,9 +163,9 @@ class Sucursales extends Main
     function checkSucursal($detalle)
     {
         $detalle->sucursal_id = (!array_key_exists("sucursal_id", $detalle)) ? -1 : $detalle->sucursal_id;
-        $detalle->nombre = (!array_key_exists("nombre", $detalle)) ? 0 : $detalle->nombre;
-        $detalle->direccion = (!array_key_exists("direccion", $detalle)) ? 0 : $detalle->direccion;
-        $detalle->telefono = (!array_key_exists("telefono", $detalle)) ? 0 : $detalle->telefono;
+        $detalle->nombre = (!array_key_exists("nombre", $detalle)) ? "" : $detalle->nombre;
+        $detalle->direccion = (!array_key_exists("direccion", $detalle)) ? "" : $detalle->direccion;
+        $detalle->telefono = (!array_key_exists("telefono", $detalle)) ? "" : $detalle->telefono;
         $detalle->pos_cantidad = (!array_key_exists("pos_cantidad", $detalle)) ? 1 : $detalle->pos_cantidad;
 
         return $detalle;

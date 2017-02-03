@@ -4,15 +4,21 @@
     var scripts = document.getElementsByTagName("script");
     var currentScriptPath = scripts[scripts.length - 1].src;
 
-    angular.module('acSucursales', ['ngRoute'])
+    if (currentScriptPath.length == 0) {
+        currentScriptPath = window.installPath + '/mv-angular-sucursales/includes/ac-sucursales.php';
+    }
+
+    angular.module('acSucursales', [])
         .factory('SucursalesService', SucursalesService)
         .service('SucursalesVars', SucursalesVars);
 
 
     SucursalesService.$inject = ['$http', 'SucursalesVars', '$cacheFactory', 'AcUtils', 'AcUtilsGlobals', 'ErrorHandler', '$q'];
     function SucursalesService($http, SucursalesVars, $cacheFactory, AcUtils, AcUtilsGlobals, ErrorHandler, $q) {
+        //Variables
         var service = {};
-        var url = window.installPath + '/ac-angular-sucursales/includes/ac-sucursales.php';
+
+        var url = currentScriptPath.replace('ac-sucursales.js', '/includes/ac-sucursales.php');
 
 
         service.get = get;
@@ -23,6 +29,7 @@
         service.create = create;
         service.update = update;
         service.remove = remove;
+        service.save = save;
 
         service.goToPagina = goToPagina;
         service.next = next;
@@ -36,8 +43,7 @@
             var $httpDefaultCache = $cacheFactory.get('$http');
             var cachedData = [];
 
-
-            // Verifica si existe el cache de sucursales
+            // Verifica si existe el cache de usuarios
             if ($httpDefaultCache.get(urlGet) != undefined) {
                 if (SucursalesVars.clearCache) {
                     $httpDefaultCache.remove(urlGet);
@@ -51,18 +57,8 @@
                 }
             }
 
-
             return $http.get(urlGet, {cache: true})
                 .then(function (response) {
-
-                    for (var x in response.data) {
-                        response.data[x].cajas = [];
-                        for (var i = 1; i <= response.data[x].pos_cantidad; i++) {
-                            response.data[x].cajas.push({caja_id: i, nombre: 'Caja ' + i})
-                        }
-                    }
-
-
                     $httpDefaultCache.put(urlGet, response.data);
                     SucursalesVars.clearCache = false;
                     SucursalesVars.paginas = (response.data.length % SucursalesVars.paginacion == 0) ? parseInt(response.data.length / SucursalesVars.paginacion) : parseInt(response.data.length / SucursalesVars.paginacion) + 1;
@@ -71,9 +67,8 @@
                 })
                 .catch(function (response) {
                     AcUtilsGlobals.stopWaiting();
-                    ErrorHandler(response.data);
-                    SucursalesVars.clearCache = false;
-                })
+                    ErrorHandler(response);
+                });
         }
 
         /**
@@ -123,6 +118,17 @@
 
         }
 
+        function save(sucursal) {
+
+            var deferred = $q.defer();
+
+            if (sucursal.sucursal_id != undefined) {
+                deferred.resolve(update(sucursal));
+            } else {
+                deferred.resolve(create(sucursal));
+            }
+            return deferred.promise;
+        }
 
         /** @name: remove
          * @param sucursal_id
@@ -150,20 +156,19 @@
          * @param callback
          * @returns {*}
          */
-        function create(sucursal, callback) {
-
+        function create(sucursal) {
             return $http.post(url,
                 {
                     'function': 'create',
                     'sucursal': JSON.stringify(sucursal)
                 })
-                .success(function (data) {
+                .then(function (response) {
                     SucursalesVars.clearCache = true;
-                    callback(data);
+                    return response.data;
                 })
-                .error(function (data) {
+                .catch(function (response) {
                     SucursalesVars.clearCache = true;
-                    callback(data);
+                    ErrorHandler(response);
                 });
         }
 
@@ -173,18 +178,19 @@
          * @param callback
          * @description: Realiza update al sucursal.
          */
-        function update(sucursal, callback) {
+        function update(sucursal) {
             return $http.post(url,
                 {
                     'function': 'update',
                     'sucursal': JSON.stringify(sucursal)
                 })
-                .success(function (data) {
+                .then(function (response) {
                     SucursalesVars.clearCache = true;
-                    callback(data);
+                    return response.data;
                 })
-                .error(function (data) {
-                    callback(data);
+                .catch(function (response) {
+                    SucursalesVars.clearCache = true;
+                    ErrorHandler(response);
                 });
         }
 
