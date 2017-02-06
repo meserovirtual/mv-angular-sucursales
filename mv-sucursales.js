@@ -5,10 +5,10 @@
     var currentScriptPath = scripts[scripts.length - 1].src;
 
     if (currentScriptPath.length == 0) {
-        currentScriptPath = window.installPath + '/mv-angular-sucursales/includes/ac-sucursales.php';
+        currentScriptPath = window.installPath + '/mv-angular-sucursales/includes/mv-sucursales.php';
     }
 
-    angular.module('acSucursales', [])
+    angular.module('mvSucursales', [])
         .factory('SucursalesService', SucursalesService)
         .service('SucursalesVars', SucursalesVars);
 
@@ -18,7 +18,7 @@
         //Variables
         var service = {};
 
-        var url = currentScriptPath.replace('ac-sucursales.js', '/includes/ac-sucursales.php');
+        var url = currentScriptPath.replace('mv-sucursales.js', '/includes/mv-sucursales.php');
 
 
         service.get = get;

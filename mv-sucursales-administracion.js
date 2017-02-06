@@ -1,25 +1,25 @@
 (function () {
     'use strict';
 
-    angular.module('acSucursalesAdministracion', [])
-        .component('acSucursalesAdministracion', acSucursalesAdministracion());
+    angular.module('mvSucursalesAdministracion', [])
+        .component('mvSucursalesAdministracion', mvSucursalesAdministracion());
 
-    function acSucursalesAdministracion() {
+    function mvSucursalesAdministracion() {
         return {
             bindings: {
                 searchFunction: '&'
             },
-            templateUrl: window.installPath + '/mv-angular-sucursales/ac-sucursales-administracion.html',
-            controller: AcSucursalController
+            templateUrl: window.installPath + '/mv-angular-sucursales/mv-sucursales-administracion.html',
+            controller: MvSucursalController
         }
     }
 
-    AcSucursalController.$inject = ["SucursalesVars", 'SucursalesService', "AcUtils"];
+    MvSucursalController.$inject = ["SucursalesVars", 'SucursalesService', "AcUtils"];
     /**
      * @param AcUsuarios
      * @constructor
      */
-    function AcSucursalController(SucursalesVars, SucursalesService, AcUtils) {
+    function MvSucursalController(SucursalesVars, SucursalesService, AcUtils) {
         var vm = this;
 
         vm.sucursales = [];
