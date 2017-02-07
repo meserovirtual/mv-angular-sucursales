@@ -14,12 +14,12 @@
         }
     }
 
-    MvSucursalController.$inject = ["SucursalesVars", 'SucursalesService', "AcUtils"];
+    MvSucursalController.$inject = ["SucursalesVars", 'SucursalesService', "MvUtils"];
     /**
      * @param AcUsuarios
      * @constructor
      */
-    function MvSucursalController(SucursalesVars, SucursalesService, AcUtils) {
+    function MvSucursalController(SucursalesVars, SucursalesService, MvUtils) {
         var vm = this;
 
         vm.sucursales = [];
@@ -44,14 +44,14 @@
             //console.log(vm.sucursal);
 
             if(vm.sucursal.telefono != undefined && vm.sucursal.telefono.length > 0) {
-                if(!AcUtils.validaTelefono(vm.sucursal.telefono)) {
-                    AcUtils.showMessage('error', 'El formato del teléfono no es correcto.');
+                if(!MvUtils.validaTelefono(vm.sucursal.telefono)) {
+                    MvUtils.showMessage('error', 'El formato del teléfono no es correcto.');
                     return;
                 }
             }
 
             if(vm.sucursal.nombre === undefined || vm.sucursal.direccion === undefined) {
-                AcUtils.showMessage('error', 'El nombre y la dirección no pueden ser vacio');
+                MvUtils.showMessage('error', 'El nombre y la dirección no pueden ser vacio');
                 return;
             } else {
                 SucursalesService.save(vm.sucursal).then(function (data) {
@@ -59,9 +59,9 @@
                     vm.detailsOpen = (data === undefined || data < 0) ? true : false;
                     loadSucursales();
                     if(data === undefined)
-                        AcUtils.showMessage('error', 'Error actualizando el dato');
+                        MvUtils.showMessage('error', 'Error actualizando el dato');
                     else
-                        AcUtils.showMessage('success', 'La operación se realizó satisfactoriamente');
+                        MvUtils.showMessage('success', 'La operación se realizó satisfactoriamente');
                 }).catch(function (data) {
                     vm.sucursal = {};
                     vm.detailsOpen = true;
@@ -85,7 +85,7 @@
                         vm.sucursal = {};
                         vm.detailsOpen = false;
                         loadSucursales();
-                        AcUtils.showMessage('success', 'La registro se borro satisfactoriamente');
+                        MvUtils.showMessage('success', 'La registro se borro satisfactoriamente');
                     });
                 }
             }
@@ -116,20 +116,20 @@
         }
 
         vm.next = function () {
-            paginar(AcUtils.next(SucursalesVars));
+            paginar(MvUtils.next(SucursalesVars));
         };
         vm.prev = function () {
-            paginar(AcUtils.prev(SucursalesVars));
+            paginar(MvUtils.prev(SucursalesVars));
         };
         vm.first = function () {
-            paginar(AcUtils.first(SucursalesVars));
+            paginar(MvUtils.first(SucursalesVars));
         };
         vm.last = function () {
-            paginar(AcUtils.last(SucursalesVars));
+            paginar(MvUtils.last(SucursalesVars));
         };
 
         vm.goToPagina = function () {
-            paginar(AcUtils.goToPagina(vm.pagina, SucursalesVars));
+            paginar(MvUtils.goToPagina(vm.pagina, SucursalesVars));
         }
 
     }

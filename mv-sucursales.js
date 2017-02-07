@@ -13,8 +13,8 @@
         .service('SucursalesVars', SucursalesVars);
 
 
-    SucursalesService.$inject = ['$http', 'SucursalesVars', '$cacheFactory', 'AcUtils', 'AcUtilsGlobals', 'ErrorHandler', '$q'];
-    function SucursalesService($http, SucursalesVars, $cacheFactory, AcUtils, AcUtilsGlobals, ErrorHandler, $q) {
+    SucursalesService.$inject = ['$http', 'SucursalesVars', '$cacheFactory', 'MvUtils', 'MvUtilsGlobals', 'ErrorHandler', '$q'];
+    function SucursalesService($http, SucursalesVars, $cacheFactory, MvUtils, MvUtilsGlobals, ErrorHandler, $q) {
         //Variables
         var service = {};
 
@@ -38,7 +38,7 @@
         return service;
 
         function get() {
-            AcUtilsGlobals.startWaiting();
+            MvUtilsGlobals.startWaiting();
             var urlGet = url + '?function=get';
             var $httpDefaultCache = $cacheFactory.get('$http');
             var cachedData = [];
@@ -52,7 +52,7 @@
                     var deferred = $q.defer();
                     cachedData = $httpDefaultCache.get(urlGet);
                     deferred.resolve(cachedData);
-                    AcUtilsGlobals.stopWaiting();
+                    MvUtilsGlobals.stopWaiting();
                     return deferred.promise;
                 }
             }
@@ -62,11 +62,11 @@
                     $httpDefaultCache.put(urlGet, response.data);
                     SucursalesVars.clearCache = false;
                     SucursalesVars.paginas = (response.data.length % SucursalesVars.paginacion == 0) ? parseInt(response.data.length / SucursalesVars.paginacion) : parseInt(response.data.length / SucursalesVars.paginacion) + 1;
-                    AcUtilsGlobals.stopWaiting();
+                    MvUtilsGlobals.stopWaiting();
                     return response.data;
                 })
                 .catch(function (response) {
-                    AcUtilsGlobals.stopWaiting();
+                    MvUtilsGlobals.stopWaiting();
                     ErrorHandler(response);
                 });
         }
@@ -79,7 +79,7 @@
          */
         function getByParams(params, values, exact_match, callback) {
             get(function (data) {
-                AcUtils.getByParams(params, values, exact_match, data, callback);
+                MvUtils.getByParams(params, values, exact_match, data, callback);
             })
         }
 
