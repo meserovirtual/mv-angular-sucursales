@@ -59,6 +59,14 @@
 
             return $http.get(urlGet, {cache: true})
                 .then(function (response) {
+
+                    for (var x in response.data) {
+                        response.data[x].cajas = [];
+                        for (var i = 1; i <= response.data[x].pos_cantidad; i++) {
+                            response.data[x].cajas.push({caja_id: i, nombre: 'Caja ' + i})
+                        }
+                    }
+
                     $httpDefaultCache.put(urlGet, response.data);
                     SucursalesVars.clearCache = false;
                     SucursalesVars.paginas = (response.data.length % SucursalesVars.paginacion == 0) ? parseInt(response.data.length / SucursalesVars.paginacion) : parseInt(response.data.length / SucursalesVars.paginacion) + 1;
