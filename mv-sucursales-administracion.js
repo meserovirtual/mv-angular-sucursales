@@ -117,11 +117,13 @@
             } else {
                 var result = confirm('¿Esta seguro que desea eliminar la sucursal seleccionada?');
                 if(result) {
-                    SucursalesService.remove(vm.sucursal.sucursal_id, function(data){
+                    SucursalesService.remove(vm.sucursal.sucursal_id).then(function(data){
                         vm.sucursal = {};
                         vm.detailsOpen = false;
                         loadSucursales();
                         MvUtils.showMessage('success', 'La registro se borro satisfactoriamente');
+                    }).catch(function(data){
+                        console.log(data);
                     });
                 }
             }

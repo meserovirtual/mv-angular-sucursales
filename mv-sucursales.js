@@ -143,19 +143,17 @@
          * @param callback
          * @description: Elimina el sucursal seleccionado.
          */
-        function remove(sucursal_id, callback) {
+        function remove(sucursal_id) {
             return $http.post(url,
                 {function: 'remove', 'sucursal_id': sucursal_id})
-                .success(function (data) {
-                    //console.log(data);
-                    if (data !== 'false') {
-                        SucursalesVars.clearCache = true;
-                        callback(data);
-                    }
+                .then(function (data) {
+                    SucursalesVars.clearCache = true;
+                    return data;
                 })
-                .error(function (data) {
-                    callback(data);
-                })
+                .catch(function (data) {
+                    SucursalesVars.clearCache = true;
+                    ErrorHandler(data);
+                });
         }
 
         /**
