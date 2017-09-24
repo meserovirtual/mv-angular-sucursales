@@ -41,7 +41,7 @@ class Sucursales extends Main
         $db = self::$instance->db;
 
         //$results = $db->get('sucursales');
-        $results = $db->rawQuery('SELECT sucursal_id, nombre, direccion, telefono, pos_cantidad FROM sucursales ORDER BY nombre');
+        $results = $db->rawQuery('SELECT sucursal_id, nombre, direccion, telefono, pos_cantidad FROM sucursales WHERE empresa_id = ' . getEmpresa() .' ORDER BY nombre');
 
         echo json_encode($results);
     }
@@ -74,7 +74,8 @@ class Sucursales extends Main
             'nombre' => $sucursal_decoded->nombre,
             'direccion' => $sucursal_decoded->direccion,
             'telefono' => $sucursal_decoded->telefono,
-            'pos_cantidad' => $sucursal_decoded->pos_cantidad
+            'pos_cantidad' => $sucursal_decoded->pos_cantidad,
+            'empresa_id' => getEmpresa()
         );
 
         $result = $db->insert('sucursales', $data);
